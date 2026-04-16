@@ -24,11 +24,15 @@ form?.addEventListener("submit", (event) => {
   const email = String(formData.get("email") || "").trim();
 
   if (!name || !email) {
-    statusEl.textContent = "Please enter both name and email.";
+    if (statusEl) {
+      statusEl.textContent = "Please enter both name and email.";
+    }
     return;
   }
 
-  statusEl.textContent = `Thanks ${name}! Your RSVP is saved for JB's party.`;
+  if (statusEl) {
+    statusEl.textContent = `Thanks ${name}! Your RSVP is saved for JB's party.`;
+  }
   form.reset();
   if (glowToggle) {
     glowToggle.checked = !document.body.classList.contains("no-glow");
