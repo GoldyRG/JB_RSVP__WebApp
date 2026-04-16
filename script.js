@@ -4,6 +4,17 @@ const motionToggle = document.getElementById("motionToggle");
 const form = document.getElementById("rsvpForm");
 const statusEl = document.getElementById("status");
 
+const prefersReducedMotion =
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (prefersReducedMotion) {
+  document.body.classList.add("no-motion");
+  if (motionToggle) {
+    motionToggle.checked = true;
+  }
+}
+
 purpleRange?.addEventListener("input", (event) => {
   const value = Number(event.target.value);
   document.documentElement.style.setProperty("--purple-l", `${value}%`);

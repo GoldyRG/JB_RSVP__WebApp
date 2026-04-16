@@ -24,15 +24,15 @@
     <main class="layout">
       <section class="card customizer" aria-labelledby="customizer-title">
         <h2 id="customizer-title">Customize Your Look</h2>
-        <label>
+        <label for="purpleRange">
           Purple Intensity
           <input id="purpleRange" type="range" min="40" max="95" value="75" />
         </label>
-        <label>
+        <label for="glowToggle">
           Glow Effects
           <input id="glowToggle" type="checkbox" checked />
         </label>
-        <label>
+        <label for="motionToggle">
           Reduce Motion
           <input id="motionToggle" type="checkbox" />
         </label>
@@ -41,11 +41,11 @@
       <section class="card rsvp" aria-labelledby="rsvp-title">
         <h2 id="rsvp-title">RSVP</h2>
         <form id="rsvpForm" novalidate>
-          <label>
+          <label for="name">
             Name
             <input id="name" name="name" type="text" placeholder="Your name" required />
           </label>
-          <label>
+          <label for="email">
             Email
             <input
               id="email"
@@ -55,7 +55,7 @@
               required
             />
           </label>
-          <label>
+          <label for="message">
             Message
             <textarea id="message" name="message" rows="3" placeholder="Can't wait!"></textarea>
           </label>
@@ -67,4 +67,4 @@
 
     <script src="./script.js"></script>
   </body>
-  </html>
+</html>
