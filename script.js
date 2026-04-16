@@ -30,6 +30,10 @@ form?.addEventListener("submit", (event) => {
 
   statusEl.textContent = `Thanks ${name}! Your RSVP is saved for JB's party.`;
   form.reset();
-  glowToggle.checked = !document.body.classList.contains("no-glow");
-  motionToggle.checked = document.body.classList.contains("no-motion");
+  if (glowToggle) {
+    glowToggle.checked = !document.body.classList.contains("no-glow");
+  }
+  if (motionToggle) {
+    motionToggle.checked = document.body.classList.contains("no-motion");
+  }
 });

@@ -11,4 +11,4 @@ A modern Justin Bieber-themed RSVP website with a purple-to-white color system a
 
 ## Run
 
-Open `/home/runner/work/JB_RSVP__WebApp/JB_RSVP__WebApp/index.html` in a browser.
+Open `index.html` in a browser.
