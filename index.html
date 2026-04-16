@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Belieber Birthday RSVP</title>
+    <style>
+      :root {
+        --jb-purple: #7a3cff;
+        --jb-pink: #ff5fb5;
+        --panel: #ffffffee;
+        --text: #231942;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at top, #d2b8ff 0%, #845ef7 40%, #3a0ca3 100%);
+        display: grid;
+        place-items: center;
+        padding: 16px;
+      }
+      .card {
+        width: min(100%, 560px);
+        background: var(--panel);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 15px 45px #20004770;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(1.7rem, 4vw, 2.4rem);
+      }
+      .subtitle {
+        margin: 6px 0 18px;
+      }
+      .sparkle {
+        color: var(--jb-pink);
+        font-weight: 700;
+      }
+      fieldset {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        margin: 12px 0;
+        padding: 12px;
+      }
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+      input[type="number"] {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #c5c2d6;
+        padding: 10px;
+        font-size: 1rem;
+      }
+      .choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .choices label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 11px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .submit {
+        background: linear-gradient(90deg, var(--jb-purple), var(--jb-pink));
+        color: #fff;
+      }
+      .music {
+        margin-left: 8px;
+        background: #fff;
+        border: 1px solid #d7d3ef;
+      }
+      #response {
+        margin-top: 14px;
+        min-height: 1.5em;
+        font-weight: 700;
+      }
+      .interactive {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .heart {
+        font-size: 1.4rem;
+        transition: transform 0.2s;
+      }
+      .heart.pulse {
+        transform: scale(1.25);
+      }
+      @media (max-width: 520px) {
+        .interactive {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>🎉 Justin Bieber Birthday RSVP 🎉</h1>
+      <p class="subtitle"><span class="sparkle">Beliebers</span>, confirm your spot at the party.</p>
+
+      <form id="rsvpForm">
+        <label for="participants">Number of participants</label>
+        <input id="participants" name="participants" type="number" min="0" max="20" value="1" required />
+
+        <fieldset>
+          <legend>RSVP Choice</legend>
+          <div class="choices">
+            <label><input type="radio" name="choice" value="confirm" required /> Confirm ✅</label>
+            <label><input type="radio" name="choice" value="deny" /> Deny ❌</label>
+          </div>
+        </fieldset>
+
+        <div>
+          <button class="submit" type="submit">Submit RSVP</button>
+          <button id="musicToggle" class="music" type="button" aria-pressed="false">Play Music</button>
+        </div>
+      </form>
+
+      <div class="interactive">
+        <p id="quote">Tap the heart for JB-themed vibes ✨</p>
+        <button id="heartBtn" type="button" aria-label="Interactive heart reaction">
+          <span id="heart" class="heart">💜</span>
+        </button>
+      </div>
+
+      <p id="response" aria-live="polite"></p>
+
+      <audio id="partyAudio" src="./assets/jb-party-theme.wav" loop></audio>
+    </main>
+
+    <script>
+      const form = document.getElementById("rsvpForm");
+      const participantsInput = document.getElementById("participants");
+      const response = document.getElementById("response");
+      const quote = document.getElementById("quote");
+      const heart = document.getElementById("heart");
+      const heartBtn = document.getElementById("heartBtn");
+      const musicToggle = document.getElementById("musicToggle");
+      const audio = document.getElementById("partyAudio");
+
+      const quotes = [
+        "Party mode: BELIEVE 🔥",
+        "Keep calm and stay a Belieber 💫",
+        "Purple lights, good vibes, great night 🎶",
+      ];
+      let quoteIndex = 0;
+
+      document.querySelectorAll('input[name="choice"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+          if (radio.value === "deny" && radio.checked) {
+            participantsInput.value = 0;
+            participantsInput.setAttribute("readonly", "readonly");
+          } else if (radio.value === "confirm" && radio.checked) {
+            participantsInput.removeAttribute("readonly");
+            if (Number(participantsInput.value) <= 0) participantsInput.value = 1;
+          }
+        });
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const choice = new FormData(form).get("choice");
+        const participants = Number(participantsInput.value);
+
+        if (choice === "confirm") {
+          response.textContent =
+            participants > 0
+              ? `Confirmed for ${participants} participant${participants === 1 ? "" : "s"} 🎉`
+              : "Please add at least 1 participant to confirm.";
+          return;
+        }
+
+        response.textContent = "RSVP denied. We will miss you at the party!";
+      });
+
+      heartBtn.addEventListener("click", () => {
+        quoteIndex = (quoteIndex + 1) % quotes.length;
+        quote.textContent = quotes[quoteIndex];
+        heart.classList.add("pulse");
+        setTimeout(() => heart.classList.remove("pulse"), 200);
+      });
+
+      const setMusicButton = (playing) => {
+        musicToggle.textContent = playing ? "Pause Music" : "Play Music";
+        musicToggle.setAttribute("aria-pressed", String(playing));
+      };
+
+      musicToggle.addEventListener("click", async () => {
+        if (audio.paused) {
+          try {
+            await audio.play();
+            setMusicButton(true);
+          } catch {
+            response.textContent = "Music is ready, but your browser requires a tap to start playback.";
+            setMusicButton(false);
+          }
+        } else {
+          audio.pause();
+          setMusicButton(false);
+        }
+      });
+
+      window.addEventListener("load", async () => {
+        try {
+          await audio.play();
+          setMusicButton(true);
+        } catch {
+          setMusicButton(false);
+        }
+      });
+    </script>
+  </body>
+</html>
