@@ -5,6 +5,7 @@ const guestNamesGroup = document.getElementById("guestNamesGroup");
 const guestNamesInputsContainer = document.getElementById("guestNamesInputs");
 const attendanceInputs = document.querySelectorAll('input[name="attendance"]');
 const STORAGE_KEY = "jbBirthdayRsvps";
+const GOOGLE_SHEETS_WEB_APP_URL = "";
 
 function setStatus(message, variant) {
   if (!statusEl) return;
@@ -20,6 +21,33 @@ function saveRsvp(entry) {
   const saved = raw ? JSON.parse(raw) : [];
   saved.push(entry);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+}
+
+async function sendRsvpToGoogleSheets(entry) {
+  if (!GOOGLE_SHEETS_WEB_APP_URL) return false;
+
+  const payload = new URLSearchParams({
+    submittedAt: entry.submittedAt,
+    guestName: entry.guestName,
+    attendance: entry.attendance,
+    guestCount: String(entry.guestCount),
+    guestNames: entry.guestNames.join(" | "),
+    attendees: entry.attendees.join(" | "),
+  });
+
+  try {
+    await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      },
+      body: payload.toString(),
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function renderGuestNameInputs(count) {
@@ -148,6 +176,8 @@ form?.addEventListener("submit", async (event) => {
     setStatus("Could not save RSVP in this browser. Please try again.", "warn");
     return;
   }
+
+  await sendRsvpToGoogleSheets(entry);
 
   setStatus("Saved. Redirecting...", "ok");
 
