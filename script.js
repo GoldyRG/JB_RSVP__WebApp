@@ -5,7 +5,7 @@ const guestNamesGroup = document.getElementById("guestNamesGroup");
 const guestNamesInputsContainer = document.getElementById("guestNamesInputs");
 const attendanceInputs = document.querySelectorAll('input[name="attendance"]');
 const STORAGE_KEY = "jbBirthdayRsvps";
-const FORMSPREE_ENDPOINT_URL = "";
+const FORMSPREE_ENDPOINT_URL = "https://formspree.io/f/meevabwo";
 
 function setStatus(message, variant) {
   if (!statusEl) return;
@@ -31,20 +31,46 @@ async function forwardRsvp(entry) {
   try {
     const formData = new FormData();
     formData.append("guestName", entry.guestName);
-    formData.append("attendance", entry.attendance);
+    formData.append("attendance", entry.attendance === "rsvp" ? "Accepted" : "Declined");
     formData.append("guestCount", String(entry.guestCount));
     formData.append("guestNames", entry.guestNames.join(" | "));
     formData.append("attendees", entry.attendees.join(" | "));
     formData.append("submittedAt", entry.submittedAt);
     formData.append("subject", "Bianca's Bieber Bash RSVP");
+    formData.append(
+      "message",
+      [
+        `Guest Name: ${entry.guestName}`,
+        `Attendance: ${entry.attendance === "rsvp" ? "Accepted" : "Declined"}`,
+        `Number of People: ${entry.guestCount || 0}`,
+        `Additional Guests: ${entry.guestNames.length ? entry.guestNames.join(", ") : "None"}`,
+        `All Attendees: ${entry.attendees.join(", ")}`,
+        `Submitted At: ${entry.submittedAt}`,
+      ].join("\n"),
+    );
 
-    await fetch(FORMSPREE_ENDPOINT_URL, {
+    const response = await fetch(FORMSPREE_ENDPOINT_URL, {
       method: "POST",
       headers: {
         Accept: "application/json",
       },
       body: formData,
     });
+
+    if (!response.ok) {
+      let errorMessage = "Formspree rejected the submission.";
+      try {
+        const errorBody = await response.json();
+        if (errorBody?.errors?.length) {
+          errorMessage = errorBody.errors.map((error) => error.message).join(" ");
+        }
+      } catch {
+        // Keep the default message when the response body is not JSON.
+      }
+
+      return { sent: false, reason: errorMessage };
+    }
+
     return { sent: true };
   } catch {
     return { sent: false, reason: "network-error" };
@@ -180,7 +206,11 @@ form?.addEventListener("submit", async (event) => {
 
   const deliveryResult = await forwardRsvp(entry);
   if (FORMSPREE_ENDPOINT_URL && !deliveryResult.sent) {
-    console.warn("RSVP saved locally but could not be forwarded.", deliveryResult.reason);
+    setStatus(
+      `Saved locally, but Formspree rejected the submission. ${deliveryResult.reason}`,
+      "warn",
+    );
+    return;
   }
 
   setStatus("Saved. Redirecting...", "ok");
