@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,291 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Justin Bieber-themed RSVP experience with modern customization."
+      content="Justin Bieber birthday RSVP page with one guest-count RSVP form."
     />
-    <title>JB Birthday RSVP</title>
+    <title>Belieber Birthday RSVP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
-    <div class="background-glow"></div>
-    <header class="hero">
-      <p class="eyebrow">Justin Bieber Vibes</p>
-      <h1>Birthday RSVP Experience</h1>
-      <p class="subtitle">
-        A modern, customizable purple-to-white party page for the ultimate
-        pop celebration.
-      </p>
-    </header>
+  <body data-song-src="./assets/babyJB.wav">
+    <div class="stage-lights" aria-hidden="true"></div>
 
-    <main class="layout">
-      <section class="card customizer" aria-labelledby="customizer-title">
-        <h2 id="customizer-title">Customize Your Look</h2>
-        <label for="purpleRange">
-          Purple Intensity
-          <input id="purpleRange" type="range" min="40" max="95" value="75" />
-        </label>
-        <label for="glowToggle">
-          Glow Effects
-          <input id="glowToggle" type="checkbox" checked />
-        </label>
-        <label for="motionToggle">
-          Reduce Motion
-          <input id="motionToggle" type="checkbox" />
-        </label>
-      </section>
+    <main class="page-wrap">
+      <h1 class="title">   Bianca's Bieber Bash RSVP   </h1>
 
-      <section class="card rsvp" aria-labelledby="rsvp-title">
-        <h2 id="rsvp-title">RSVP</h2>
+      <section class="rsvp-panel" aria-labelledby="rsvp-title">
+        <p class="panel-copy">
+          Choose Accept if you are attending, or Decline if you cannot make it.
+        </p>
+
         <form id="rsvpForm" novalidate>
-          <label for="name">
-            Name
-            <input id="name" name="name" type="text" placeholder="Your name" required />
-          </label>
-          <label for="email">
-            Email
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              required
-            />
-          </label>
-          <label for="message">
-            Message
-            <textarea id="message" name="message" rows="3" placeholder="Can't wait!"></textarea>
-          </label>
-          <button type="submit">Submit RSVP</button>
-        </form>
-        <p id="status" role="status" aria-live="polite"></p>
-      </section>
-    </main>
+          <label for="guestName">Your Name</label>
+          <input
+            id="guestName"
+            name="guestName"
+            type="text"
+            placeholder="Enter your name"
+            autocomplete="name"
+            required
+          />
 
-    <script src="./script.js"></script>
-    <title>Belieber Birthday RSVP</title>
-    <style>
-      :root {
-        --jb-purple: #7a3cff;
-        --jb-pink: #ff5fb5;
-        --panel: #ffffffee;
-        --text: #231942;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-        color: var(--text);
-        background: radial-gradient(circle at top, #d2b8ff 0%, #845ef7 40%, #3a0ca3 100%);
-        display: grid;
-        place-items: center;
-        padding: 16px;
-      }
-      .card {
-        width: min(100%, 560px);
-        background: var(--panel);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 15px 45px #20004770;
-      }
-      h1 {
-        margin: 0;
-        font-size: clamp(1.7rem, 4vw, 2.4rem);
-      }
-      .subtitle {
-        margin: 6px 0 18px;
-      }
-      .sparkle {
-        color: var(--jb-pink);
-        font-weight: 700;
-      }
-      fieldset {
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        margin: 12px 0;
-        padding: 12px;
-      }
-      label {
-        display: block;
-        margin-bottom: 10px;
-      }
-      input[type="number"] {
-        width: 100%;
-        border-radius: 10px;
-        border: 1px solid #c5c2d6;
-        padding: 10px;
-        font-size: 1rem;
-      }
-      .choices {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-      .choices label {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-      button {
-        border: none;
-        border-radius: 999px;
-        padding: 11px 18px;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      .submit {
-        background: linear-gradient(90deg, var(--jb-purple), var(--jb-pink));
-        color: #fff;
-      }
-      .music {
-        margin-left: 8px;
-        background: #fff;
-        border: 1px solid #d7d3ef;
-      }
-      #response {
-        margin-top: 14px;
-        min-height: 1.5em;
-        font-weight: 700;
-      }
-      .interactive {
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-      }
-      .heart {
-        font-size: 1.4rem;
-        transition: transform 0.2s;
-      }
-      .heart.pulse {
-        transform: scale(1.25);
-      }
-      @media (max-width: 520px) {
-        .interactive {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="card">
-      <h1>🎉 Justin Bieber Birthday RSVP 🎉</h1>
-      <p class="subtitle"><span class="sparkle">Beliebers</span>, confirm your spot at the party.</p>
+          <fieldset class="attendance-group">
+            <legend>Are you attending?</legend>
+            <label class="choice-pill" for="attendingYes">
+              <input
+                id="attendingYes"
+                type="radio"
+                name="attendance"
+                value="rsvp"
+                checked
+                required
+              />
+              <span>Accept</span>
+            </label>
+            <label class="choice-pill" for="attendingNo">
+              <input id="attendingNo" type="radio" name="attendance" value="deny" required />
+              <span>Decline</span>
+            </label>
+          </fieldset>
 
-      <form id="rsvpForm">
-        <label for="participants">Number of participants</label>
-        <input id="participants" name="participants" type="number" min="0" max="20" value="1" required />
+          <label for="guestCount">Number of people visiting</label>
+          <input
+            id="guestCount"
+            name="guestCount"
+            type="number"
+            min="1"
+            max="20"
+            value="1"
+            required
+          />
 
-        <fieldset>
-          <legend>RSVP Choice</legend>
-          <div class="choices">
-            <label><input type="radio" name="choice" value="confirm" required /> Confirm ✅</label>
-            <label><input type="radio" name="choice" value="deny" /> Deny ❌</label>
+          <div class="guest-names-group" id="guestNamesGroup" hidden>
+            <label>Guest Names</label>
+            <p class="guest-names-helper">Add a name for every additional guest.</p>
+            <div id="guestNamesInputs" class="guest-names-inputs"></div>
           </div>
-        </fieldset>
 
-        <div>
-          <button class="submit" type="submit">Submit RSVP</button>
-          <button id="musicToggle" class="music" type="button" aria-pressed="false">Play Music</button>
-        </div>
-      </form>
+          <button type="submit">Send RSVP</button>
+        </form>
 
-      <div class="interactive">
-        <p id="quote">Tap the heart for JB-themed vibes ✨</p>
-        <button id="heartBtn" type="button" aria-label="Interactive heart reaction">
-          <span id="heart" class="heart">💜</span>
-        </button>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <div class="jb-collage" aria-hidden="true">
+        <img
+          class="jb-shot shot-1"
+          src="./assets/JB1.jpg"
+          alt=""
+          loading="lazy"
+        />
+        <img
+          class="jb-shot shot-2"
+          src="./assets/JB2.jpg"
+          alt=""
+          loading="lazy"
+        />
+        <img
+          class="jb-shot shot-3"
+          src="./assets/JB3.jpg"
+          alt=""
+          loading="lazy"
+        />
+        <img
+          class="jb-shot shot-4"
+          src="./assets/JB4.jpg"
+          alt=""
+          loading="lazy"
+        />
       </div>
-
-      <p id="response" aria-live="polite"></p>
-
-      <audio id="partyAudio" src="./assets/jb-party-theme.wav" loop></audio>
     </main>
 
-    <script>
-      const form = document.getElementById("rsvpForm");
-      const participantsInput = document.getElementById("participants");
-      const response = document.getElementById("response");
-      const quote = document.getElementById("quote");
-      const heart = document.getElementById("heart");
-      const heartBtn = document.getElementById("heartBtn");
-      const musicToggle = document.getElementById("musicToggle");
-      const audio = document.getElementById("partyAudio");
+    <aside class="music-dock" aria-label="Background music controls">
+      <button id="musicToggle" type="button" aria-pressed="false">Play</button>
+    </aside>
 
-      const quotes = [
-        "Party mode: BELIEVE 🔥",
-        "Keep calm and stay a Belieber 💫",
-        "Purple lights, good vibes, great night 🎶",
-      ];
-      let quoteIndex = 0;
+    <audio id="bgMusic" preload="auto" loop>
+      <source src="./assets/babyJB.wav" type="audio/wav" />
+    </audio>
 
-      document.querySelectorAll('input[name="choice"]').forEach((radio) => {
-        radio.addEventListener("change", () => {
-          if (radio.value === "deny" && radio.checked) {
-            participantsInput.value = 0;
-            participantsInput.setAttribute("readonly", "readonly");
-          } else if (radio.value === "confirm" && radio.checked) {
-            participantsInput.removeAttribute("readonly");
-            if (Number(participantsInput.value) <= 0) participantsInput.value = 1;
-          }
-        });
-      });
-
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const choice = new FormData(form).get("choice");
-        const participants = Number(participantsInput.value);
-
-        if (choice === "confirm") {
-          response.textContent =
-            participants > 0
-              ? `Confirmed for ${participants} participant${participants === 1 ? "" : "s"} 🎉`
-              : "Please add at least 1 participant to confirm.";
-          return;
-        }
-
-        response.textContent = "RSVP denied. We will miss you at the party!";
-      });
-
-      heartBtn.addEventListener("click", () => {
-        quoteIndex = (quoteIndex + 1) % quotes.length;
-        quote.textContent = quotes[quoteIndex];
-        heart.classList.add("pulse");
-        setTimeout(() => heart.classList.remove("pulse"), 200);
-      });
-
-      const setMusicButton = (playing) => {
-        musicToggle.textContent = playing ? "Pause Music" : "Play Music";
-        musicToggle.setAttribute("aria-pressed", String(playing));
-      };
-
-      musicToggle.addEventListener("click", async () => {
-        if (audio.paused) {
-          try {
-            await audio.play();
-            setMusicButton(true);
-          } catch {
-            response.textContent = "Music is ready, but your browser requires a tap to start playback.";
-            setMusicButton(false);
-          }
-        } else {
-          audio.pause();
-          setMusicButton(false);
-        }
-      });
-
-      window.addEventListener("load", async () => {
-        try {
-          await audio.play();
-          setMusicButton(true);
-        } catch {
-          setMusicButton(false);
-        }
-      });
-    </script>
+    <script src="./music-player.js"></script>
+    <script src="./script.js"></script>
   </body>
 </html>

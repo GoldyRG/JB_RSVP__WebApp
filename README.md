@@ -1,17 +1,29 @@
 # JB_RSVP__WebApp
 
-A modern Justin Bieber-themed RSVP website with a purple-to-white color system and interactive customization.
+A Justin Bieber-themed birthday RSVP site with one streamlined RSVP section.
 
 ## Features
 
-- Purple-to-white gradient visual theme
-- Live customization controls (purple intensity, glow toggle, reduced motion)
-- Responsive glassmorphism-style UI
-- Interactive RSVP form with instant confirmation feedback
+- Bold concert-style visual theme with Bieber images around the RSVP card
+- Single RSVP flow: guest name + number of people visiting
+- Saves submissions in browser local storage
+- Forwards RSVP details to the host using email draft (`mailto:`)
+- Optional webhook forwarding for direct automated delivery
+
+## Setup
+
+1. Open [index.html](index.html) and set the host email in the form attribute:
+
+```html
+<form id="rsvpForm" data-host-email="your-email@example.com" novalidate>
+```
+
+2. Optional: set a webhook in [script.js](script.js) if you want direct POST delivery:
+
+```js
+window.RSVP_WEBHOOK_URL = "https://your-endpoint.example/rsvp";
+```
 
 ## Run
 
-Open `index.html` in a browser.
-An RSVP website, with interactive features and a UI to RSVP to a birthday party JB themed.
-
-Open `/home/runner/work/JB_RSVP__WebApp/JB_RSVP__WebApp/index.html` in a browser to use the app.
+Open [index.html](index.html) in a browser.

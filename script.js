@@ -1,54 +1,156 @@
-const purpleRange = document.getElementById("purpleRange");
-const glowToggle = document.getElementById("glowToggle");
-const motionToggle = document.getElementById("motionToggle");
 const form = document.getElementById("rsvpForm");
 const statusEl = document.getElementById("status");
+const guestCountInput = document.getElementById("guestCount");
+const guestNamesGroup = document.getElementById("guestNamesGroup");
+const guestNamesInputsContainer = document.getElementById("guestNamesInputs");
+const attendanceInputs = document.querySelectorAll('input[name="attendance"]');
+const STORAGE_KEY = "jbBirthdayRsvps";
 
-const prefersReducedMotion =
-  typeof window.matchMedia === "function" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-if (prefersReducedMotion) {
-  document.body.classList.add("no-motion");
-  if (motionToggle) {
-    motionToggle.checked = true;
+function setStatus(message, variant) {
+  if (!statusEl) return;
+  statusEl.textContent = message;
+  statusEl.classList.remove("ok", "warn");
+  if (variant) {
+    statusEl.classList.add(variant);
   }
 }
 
-purpleRange?.addEventListener("input", (event) => {
-  const value = Number(event.target.value);
-  document.documentElement.style.setProperty("--purple-l", `${value}%`);
-});
+function saveRsvp(entry) {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  const saved = raw ? JSON.parse(raw) : [];
+  saved.push(entry);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+}
 
-glowToggle?.addEventListener("change", () => {
-  document.body.classList.toggle("no-glow", !glowToggle.checked);
-});
+function renderGuestNameInputs(count) {
+  if (!guestNamesInputsContainer) return;
 
-motionToggle?.addEventListener("change", () => {
-  document.body.classList.toggle("no-motion", motionToggle.checked);
-});
+  guestNamesInputsContainer.innerHTML = "";
 
-form?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const formData = new FormData(form);
-  const name = String(formData.get("name") || "").trim();
-  const email = String(formData.get("email") || "").trim();
+  const additionalGuests = Math.max(count - 1, 0);
 
-  if (!name || !email) {
-    if (statusEl) {
-      statusEl.textContent = "Please enter both name and email.";
+  for (let i = 1; i <= additionalGuests; i++) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "guest-name-input-wrapper";
+
+    const label = document.createElement("label");
+    label.textContent = `Guest ${i + 1}`;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = `guestName_${i}`;
+    input.placeholder = `Name of guest ${i + 1}`;
+    input.required = true;
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+    guestNamesInputsContainer.appendChild(wrapper);
+  }
+}
+
+function toggleGuestCountState(attendance) {
+  if (!guestCountInput) return;
+
+  const isDeny = attendance === "deny";
+  guestCountInput.disabled = isDeny;
+
+  if (isDeny) {
+    guestCountInput.value = "0";
+  } else if (Number(guestCountInput.value) < 1) {
+    guestCountInput.value = "1";
+  }
+}
+
+function toggleGuestNamesState() {
+  if (!guestNamesGroup || !guestNamesInputsContainer || !guestCountInput) return;
+
+  const attendance = document.querySelector('input[name="attendance"]:checked')?.value || "rsvp";
+  const guestCount = Number(guestCountInput.value || 0);
+  const shouldShow = attendance === "rsvp" && guestCount > 1;
+
+  guestNamesGroup.hidden = !shouldShow;
+
+  if (shouldShow) {
+    renderGuestNameInputs(guestCount);
+  } else {
+    guestNamesInputsContainer.innerHTML = "";
+  }
+}
+
+attendanceInputs.forEach((input) => {
+  input.addEventListener("change", () => {
+    if (input.checked) {
+      toggleGuestCountState(input.value);
+      toggleGuestNamesState();
     }
+  });
+});
+
+guestCountInput?.addEventListener("input", () => {
+  toggleGuestNamesState();
+});
+
+toggleGuestCountState(document.querySelector('input[name="attendance"]:checked')?.value || "rsvp");
+toggleGuestNamesState();
+
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(form);
+  const guestName = String(formData.get("guestName") || "").trim();
+  const attendance = String(formData.get("attendance") || "").trim();
+  const guestCount = attendance === "deny" ? 0 : Number(formData.get("guestCount") || 0);
+
+  // Collect guest names from individual inputs
+  const guestNames = [];
+  for (let i = 1; i < guestCount; i++) {
+    const name = String(formData.get(`guestName_${i}`) || "").trim();
+    if (name) {
+      guestNames.push(name);
+    }
+  }
+
+  if (!guestName) {
+    setStatus("Please add your name before sending your RSVP.", "warn");
     return;
   }
 
-  if (statusEl) {
-    statusEl.textContent = `Thanks ${name}! Your RSVP is saved for JB's party.`;
+  if (attendance !== "rsvp" && attendance !== "deny") {
+    setStatus("Please choose Accept or Decline.", "warn");
+    return;
   }
-  form.reset();
-  if (glowToggle) {
-    glowToggle.checked = !document.body.classList.contains("no-glow");
+
+  if (attendance === "rsvp" && (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 20)) {
+    setStatus("Choose a whole number between 1 and 20.", "warn");
+    guestCountInput?.focus();
+    return;
   }
-  if (motionToggle) {
-    motionToggle.checked = document.body.classList.contains("no-motion");
+
+  const expectedAdditionalGuests = attendance === "rsvp" ? Math.max(guestCount - 1, 0) : 0;
+
+  if (attendance === "rsvp" && expectedAdditionalGuests > 0 && guestNames.length !== expectedAdditionalGuests) {
+    setStatus(`Please enter all guest names.`, "warn");
+    return;
   }
+
+  const entry = {
+    guestName,
+    guestCount,
+    guestNames,
+    attendance,
+    attendees: [guestName, ...guestNames],
+    submittedAt: new Date().toISOString(),
+  };
+
+  try {
+    saveRsvp(entry);
+  } catch {
+    setStatus("Could not save RSVP in this browser. Please try again.", "warn");
+    return;
+  }
+
+  setStatus("Saved. Redirecting...", "ok");
+
+  const nextPage = attendance === "rsvp" ? "./success.html" : "./sorry.html";
+  window.location.href = nextPage;
 });

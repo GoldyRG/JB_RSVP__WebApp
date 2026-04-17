@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSVP Declined</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #f5f1ff;
+        --muted: #c9b9d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: "Outfit", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(900px 500px at 20% 14%, rgba(186, 100, 255, 0.32), transparent 60%),
+          radial-gradient(860px 460px at 80% 78%, rgba(124, 58, 237, 0.28), transparent 60%),
+          linear-gradient(170deg, #1a0f2e, #0d051a);
+        padding: 1rem;
+        animation: fadeIn 0.8s ease-out;
+        overflow: hidden;
+        position: relative;
+        isolation: isolate;
+      }
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        inset: -28vmax;
+        pointer-events: none;
+        z-index: 0;
+      }
+      body::before {
+        background: conic-gradient(
+          from 120deg,
+          rgba(199, 125, 255, 0.08),
+          rgba(255, 255, 255, 0.035),
+          rgba(124, 58, 237, 0.13),
+          rgba(199, 125, 255, 0.08)
+        );
+        animation: auroraSpin 24s linear infinite;
+      }
+      body::after {
+        background:
+          radial-gradient(circle at 18% 28%, rgba(255, 255, 255, 0.12), transparent 48%),
+          radial-gradient(circle at 82% 20%, rgba(124, 58, 237, 0.24), transparent 55%),
+          radial-gradient(circle at 48% 92%, rgba(212, 165, 255, 0.16), transparent 54%);
+        animation: auroraSpin 35s linear infinite reverse;
+      }
+      .edge-effects {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .edge-rail {
+        position: absolute;
+        top: 1vh;
+        bottom: 1vh;
+        width: 13px;
+        border-radius: 999px;
+        opacity: 0.9;
+        filter: blur(1px);
+        box-shadow: 0 0 24px rgba(157, 78, 221, 0.46);
+      }
+      .edge-rail.left {
+        left: clamp(6px, 1.5vw, 18px);
+        background: linear-gradient(to bottom, transparent, rgba(224, 170, 255, 0.92), transparent);
+        animation: edgePulse 2.9s ease-in-out infinite, railDrift 7.1s ease-in-out infinite;
+      }
+      .edge-rail.right {
+        right: clamp(6px, 1.5vw, 18px);
+        background: linear-gradient(to bottom, transparent, rgba(157, 78, 221, 0.93), transparent);
+        animation: edgePulse 2.9s ease-in-out infinite reverse, railDrift 7.8s ease-in-out infinite reverse;
+      }
+      .edge-orb {
+        position: absolute;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #ffffff, #9d4edd 70%);
+        box-shadow: 0 0 28px rgba(157, 78, 221, 0.7);
+      }
+      .edge-orb.left {
+        left: clamp(2px, 1vw, 12px);
+        animation: floatArcLeft 9.6s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+      }
+      .edge-orb.right {
+        right: clamp(2px, 1vw, 12px);
+        animation: floatArcRight 11.4s cubic-bezier(0.22, 0.61, 0.36, 1) infinite 1.3s;
+      }
+      .edge-orb.orb-1 {
+        top: 90vh;
+      }
+      .edge-orb.orb-2 {
+        top: 66vh;
+        width: 12px;
+        height: 12px;
+        opacity: 0.82;
+      }
+      .edge-orb.orb-3 {
+        top: 95vh;
+        width: 10px;
+        height: 10px;
+        opacity: 0.68;
+      }
+      .edge-ring {
+        position: absolute;
+        width: min(22vw, 220px);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.24);
+        box-shadow: 0 0 24px rgba(157, 78, 221, 0.35), inset 0 0 20px rgba(124, 58, 237, 0.2);
+        mix-blend-mode: screen;
+        opacity: 0.72;
+      }
+      .edge-ring.left {
+        left: -88px;
+        top: 14vh;
+        animation: ringBob 7s ease-in-out infinite;
+      }
+      .edge-ring.right {
+        right: -88px;
+        bottom: 14vh;
+        animation: ringBob 7.8s ease-in-out infinite reverse;
+      }
+      .panel {
+        width: min(700px, 100%);
+        border-radius: 24px;
+        border: 1px solid rgba(186, 100, 255, 0.28);
+        background: rgba(26, 15, 46, 0.88);
+        backdrop-filter: blur(8px);
+        padding: 1.6rem;
+        text-align: center;
+        animation: slideUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+        box-shadow: 0 34px 80px rgba(12, 6, 24, 0.58);
+        position: relative;
+        z-index: 2;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(2.2rem, 9vw, 4.2rem);
+        font-family: "Bebas Neue", Impact, sans-serif;
+        letter-spacing: 0.04em;
+        animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
+      }
+      p {
+        margin: 0.5rem auto 0;
+        max-width: 44ch;
+        color: var(--muted);
+      }
+      .badge {
+        margin: 1rem auto 0;
+        display: inline-block;
+        padding: 0.35rem 0.72rem;
+        border-radius: 999px;
+        background: linear-gradient(96deg, #9d4edd, #c77dff);
+        color: #0f051a;
+        font-weight: 700;
+        animation: fadeIn 0.6s ease-out 0.3s backwards;
+      }
+      .back {
+        margin-top: 1.25rem;
+        display: inline-block;
+        text-decoration: none;
+        color: #0f051a;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 0.62rem 1.1rem;
+        background: linear-gradient(96deg, #c77dff, #e0aaff);
+        transition: all 0.3s ease;
+      }
+      .back:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(124, 58, 237, 0.4);
+      }
+      .placeholders {
+        margin-top: 1.2rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        text-align: left;
+      }
+      .placeholder-card {
+        border-radius: 14px;
+        border: 1px dashed rgba(186, 100, 255, 0.28);
+        background: rgba(255, 255, 255, 0.03);
+        padding: 0.8rem;
+        animation: slideUp 0.6s ease-out backwards;
+        animation-delay: calc(0.3s + var(--index, 0) * 0.1s);
+        transition: all 0.3s ease;
+      }
+      .placeholder-card:hover {
+        border-color: rgba(186, 100, 255, 0.5);
+        background: rgba(186, 100, 255, 0.08);
+        transform: translateY(-4px);
+      }
+      .placeholder-card h3 {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .placeholder-card p {
+        margin-top: 0.35rem;
+        font-size: 0.82rem;
+      }
+      .image-card {
+        grid-column: 1 / -1;
+        padding: 0;
+        border: 1px solid rgba(186, 100, 255, 0.36);
+        background: rgba(255, 255, 255, 0.02);
+        overflow: hidden;
+        max-width: min(100%, 600px);
+        margin: 0 auto;
+        width: 100%;
+      }
+      .image-card img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 14px;
+        display: block;
+        transition: transform 0.55s ease;
+      }
+      .image-card:hover img {
+        transform: scale(1.035);
+      }
+      .response-copy {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 0.75rem 0.25rem;
+        border: 0;
+        background: transparent;
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+      }
+      .response-copy .response-line {
+        margin: 0;
+        font-family: "Bebas Neue", Impact, sans-serif;
+        letter-spacing: 0.06em;
+        font-size: clamp(1.85rem, 5.2vw, 2.8rem);
+        line-height: 0.96;
+        color: #f2e9ff;
+        text-transform: uppercase;
+        text-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+        max-width: none;
+        width: 100%;
+      }
+      .music-dock {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        animation: slideIn 0.6s ease-out 0.4s backwards;
+        z-index: 3;
+      }
+      #musicToggle {
+        width: auto;
+        min-width: 6.4rem;
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        border-radius: 999px;
+        padding: 0.72rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: #f8f2ff;
+        background: linear-gradient(140deg, rgba(124, 58, 237, 0.92), rgba(212, 165, 255, 0.86));
+        box-shadow: 0 12px 26px rgba(8, 8, 20, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        backdrop-filter: blur(12px);
+        transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+      }
+      #musicToggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 30px rgba(8, 8, 20, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        background: linear-gradient(140deg, rgba(139, 92, 246, 0.96), rgba(224, 170, 255, 0.9));
+      }
+      #musicToggle[aria-pressed="true"] {
+        background: linear-gradient(140deg, rgba(99, 102, 241, 0.92), rgba(167, 139, 250, 0.88));
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes edgePulse {
+        0%, 100% {
+          opacity: 0.52;
+          transform: scaleY(0.88);
+        }
+        50% {
+          opacity: 0.95;
+          transform: scaleY(1.06);
+        }
+      }
+      @keyframes railDrift {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(2px);
+        }
+      }
+      @keyframes floatArcLeft {
+        0% {
+          transform: translate(0, 0) scale(0.86);
+          opacity: 0;
+        }
+        12% {
+          opacity: 0.9;
+        }
+        58% {
+          transform: translate(8px, -46vh) scale(1.02);
+        }
+        100% {
+          transform: translate(-6px, -92vh) scale(0.8);
+          opacity: 0;
+        }
+      }
+      @keyframes floatArcRight {
+        0% {
+          transform: translate(0, 0) scale(0.9);
+          opacity: 0;
+        }
+        12% {
+          opacity: 0.9;
+        }
+        60% {
+          transform: translate(-9px, -50vh) scale(1.04);
+        }
+        100% {
+          transform: translate(7px, -94vh) scale(0.75);
+          opacity: 0;
+        }
+      }
+      @keyframes auroraSpin {
+        from {
+          transform: rotate(0deg) scale(1);
+        }
+        50% {
+          transform: rotate(180deg) scale(1.05);
+        }
+        to {
+          transform: rotate(360deg) scale(1);
+        }
+      }
+      @keyframes ringBob {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 0.62;
+        }
+        50% {
+          transform: translateY(-12px) scale(1.05);
+          opacity: 0.82;
+        }
+      }
+      @media (max-width: 760px) {
+        .placeholders {
+          grid-template-columns: 1fr;
+        }
+        .edge-rail {
+          width: 7px;
+          top: 6vh;
+          bottom: 13vh;
+          opacity: 0.78;
+        }
+        .edge-orb {
+          width: 11px;
+          height: 11px;
+          box-shadow: 0 0 14px rgba(157, 78, 221, 0.56);
+        }
+        .edge-ring {
+          width: 112px;
+          opacity: 0.38;
+        }
+        .panel {
+          padding: 1.15rem;
+        }
+        .response-copy {
+          padding: 0.5rem 0;
+        }
+        .response-copy .response-line {
+          font-size: clamp(1.45rem, 7.3vw, 2.15rem);
+          letter-spacing: 0.04em;
+          line-height: 0.98;
+        }
+        .music-dock {
+          right: 0.75rem;
+          bottom: 0.75rem;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body data-song-src="./assets/DenySong.wav">
+    <div class="edge-effects" aria-hidden="true">
+      <span class="edge-rail left"></span>
+      <span class="edge-rail right"></span>
+      <span class="edge-orb left orb-1"></span>
+      <span class="edge-orb left orb-2"></span>
+      <span class="edge-orb right orb-1"></span>
+      <span class="edge-orb right orb-3"></span>
+      <span class="edge-ring left"></span>
+      <span class="edge-ring right"></span>
+    </div>
+    <main class="panel">
+      <h1>WE WILL MISS YOU</h1>
+      <span class="badge">Decline Received</span>
+      <p>
+        The party stage will not be the same without you,
+        but we appreciate the heads-up.
+      </p>  
+
+      <section class="placeholders" aria-label="Customization placeholders">
+        <article class="placeholder-card image-card">
+          <img src="./assets/JBcry.jpg" alt="Empathetic moment" loading="lazy" />
+        </article>
+        <article class="placeholder-card response-copy" aria-label="Decline message">
+          <p class="response-line">Justin Bieber didn't want you to come anyways..</p>
+        </article>
+      </section>
+
+      <a class="back" href="./index.html">Back To RSVP Form</a>
+    </main>
+
+    <aside class="music-dock" aria-label="Background music controls">
+      <button id="musicToggle" type="button" aria-pressed="false">Play</button>
+    </aside>
+
+    <audio id="bgMusic" preload="auto" loop>
+      <source src="./assets/DenySong.wav" type="audio/wav" />
+    </audio>
+
+    <script src="./music-player.js"></script>
+  </body>
+</html>
