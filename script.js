@@ -7,6 +7,11 @@ const attendanceInputs = document.querySelectorAll('input[name="attendance"]');
 const STORAGE_KEY = "jbBirthdayRsvps";
 const FORMSPREE_ENDPOINT_URL = "https://formspree.io/f/meevabwo";
 
+function syncAppHeight() {
+  const viewportHeight = window.visualViewport?.height || window.innerHeight;
+  document.documentElement.style.setProperty("--app-height", `${viewportHeight}px`);
+}
+
 function setStatus(message, variant) {
   if (!statusEl) return;
   statusEl.textContent = message;
@@ -147,6 +152,11 @@ guestCountInput?.addEventListener("input", () => {
 
 toggleGuestCountState(document.querySelector('input[name="attendance"]:checked')?.value || "rsvp");
 toggleGuestNamesState();
+syncAppHeight();
+
+window.addEventListener("resize", syncAppHeight);
+window.visualViewport?.addEventListener("resize", syncAppHeight);
+window.visualViewport?.addEventListener("scroll", syncAppHeight);
 
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
