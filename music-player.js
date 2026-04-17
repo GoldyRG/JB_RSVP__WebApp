@@ -7,6 +7,19 @@ function updateMusicButton(isPlaying) {
   musicToggle.setAttribute("aria-pressed", String(isPlaying));
 }
 
+async function playMusic() {
+  if (!music) return false;
+
+  try {
+    await music.play();
+    updateMusicButton(true);
+    return true;
+  } catch {
+    updateMusicButton(false);
+    return false;
+  }
+}
+
 async function attemptAutoplay() {
   if (!music) return;
 
@@ -18,24 +31,33 @@ async function attemptAutoplay() {
     music.load();
   }
 
-  try {
-    await music.play();
-    updateMusicButton(true);
-  } catch {
-    updateMusicButton(false);
-  }
+  await playMusic();
+}
+
+function setupFirstInteractionAutoplay() {
+  if (!music || !music.paused) return;
+
+  const startOnInteraction = async () => {
+    const didPlay = await playMusic();
+    if (didPlay) {
+      removeInteractionListeners();
+    }
+  };
+
+  const removeInteractionListeners = () => {
+    window.removeEventListener("pointerdown", startOnInteraction);
+    window.removeEventListener("keydown", startOnInteraction);
+  };
+
+  window.addEventListener("pointerdown", startOnInteraction);
+  window.addEventListener("keydown", startOnInteraction);
 }
 
 musicToggle?.addEventListener("click", async () => {
   if (!music) return;
 
   if (music.paused) {
-    try {
-      await music.play();
-      updateMusicButton(true);
-    } catch {
-      updateMusicButton(false);
-    }
+    await playMusic();
   } else {
     music.pause();
     updateMusicButton(false);
@@ -44,4 +66,5 @@ musicToggle?.addEventListener("click", async () => {
 
 window.addEventListener("load", () => {
   void attemptAutoplay();
+  setupFirstInteractionAutoplay();
 });
