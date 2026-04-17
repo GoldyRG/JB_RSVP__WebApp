@@ -7,47 +7,31 @@ A Justin Bieber-themed birthday RSVP site with one streamlined RSVP section.
 - Bold concert-style visual theme with Bieber images around the RSVP card
 - Single RSVP flow: guest name + number of people visiting
 - Saves submissions in browser local storage
-- Forwards RSVP details to Google Sheets through an Apps Script web app endpoint
+- Optional RSVP forwarding to Formspree
 
 ## Setup
 
-1. Open [script.js](script.js) and paste your Google Apps Script web app URL here:
+1. Create a Formspree form and copy your form endpoint URL.
+2. Open [script.js](script.js) and paste it here:
 
 ```js
-const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/your-deployment-id/exec";
+const FORMSPREE_ENDPOINT_URL = "https://formspree.io/f/your-form-id";
 ```
 
-2. Create a Google Sheet with these columns in row 1:
+3. Formspree will receive the RSVP as form fields like:
 
-```text
-submittedAt | guestName | attendance | guestCount | guestNames | attendees
-```
-
-3. Paste this Apps Script into Extensions > Apps Script:
-
-```javascript
-function doPost(e) {
-	const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("RSVPs") || SpreadsheetApp.getActiveSpreadsheet().insertSheet("RSVPs");
-	if (sheet.getLastRow() === 0) {
-		sheet.appendRow(["submittedAt", "guestName", "attendance", "guestCount", "guestNames", "attendees"]);
-	}
-
-	sheet.appendRow([
-		e.parameter.submittedAt || "",
-		e.parameter.guestName || "",
-		e.parameter.attendance || "",
-		e.parameter.guestCount || "",
-		e.parameter.guestNames || "",
-		e.parameter.attendees || "",
-	]);
-
-	return ContentService.createTextOutput("ok");
+```json
+{
+  "guestName": "Bianca",
+  "guestCount": 3,
+  "guestNames": ["Guest 2", "Guest 3"],
+  "attendance": "rsvp",
+  "attendees": ["Bianca", "Guest 2", "Guest 3"],
+  "submittedAt": "2026-04-17T00:00:00.000Z"
 }
 ```
 
-4. Deploy the script as a Web App:
-- Execute as: Me
-- Who has access: Anyone
+4. In Formspree, confirm the form is enabled and set to receive submissions.
 
 ## Run
 

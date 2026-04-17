@@ -5,7 +5,7 @@ const guestNamesGroup = document.getElementById("guestNamesGroup");
 const guestNamesInputsContainer = document.getElementById("guestNamesInputs");
 const attendanceInputs = document.querySelectorAll('input[name="attendance"]');
 const STORAGE_KEY = "jbBirthdayRsvps";
-const GOOGLE_SHEETS_WEB_APP_URL = "";
+const FORMSPREE_ENDPOINT_URL = "";
 
 function setStatus(message, variant) {
   if (!statusEl) return;
@@ -23,30 +23,31 @@ function saveRsvp(entry) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
 }
 
-async function sendRsvpToGoogleSheets(entry) {
-  if (!GOOGLE_SHEETS_WEB_APP_URL) return false;
-
-  const payload = new URLSearchParams({
-    submittedAt: entry.submittedAt,
-    guestName: entry.guestName,
-    attendance: entry.attendance,
-    guestCount: String(entry.guestCount),
-    guestNames: entry.guestNames.join(" | "),
-    attendees: entry.attendees.join(" | "),
-  });
+async function forwardRsvp(entry) {
+  if (!FORMSPREE_ENDPOINT_URL) {
+    return { sent: false, reason: "not-configured" };
+  }
 
   try {
-    await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+    const formData = new FormData();
+    formData.append("guestName", entry.guestName);
+    formData.append("attendance", entry.attendance);
+    formData.append("guestCount", String(entry.guestCount));
+    formData.append("guestNames", entry.guestNames.join(" | "));
+    formData.append("attendees", entry.attendees.join(" | "));
+    formData.append("submittedAt", entry.submittedAt);
+    formData.append("subject", "Bianca's Bieber Bash RSVP");
+
+    await fetch(FORMSPREE_ENDPOINT_URL, {
       method: "POST",
-      mode: "no-cors",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        Accept: "application/json",
       },
-      body: payload.toString(),
+      body: formData,
     });
-    return true;
+    return { sent: true };
   } catch {
-    return false;
+    return { sent: false, reason: "network-error" };
   }
 }
 
@@ -177,7 +178,10 @@ form?.addEventListener("submit", async (event) => {
     return;
   }
 
-  await sendRsvpToGoogleSheets(entry);
+  const deliveryResult = await forwardRsvp(entry);
+  if (FORMSPREE_ENDPOINT_URL && !deliveryResult.sent) {
+    console.warn("RSVP saved locally but could not be forwarded.", deliveryResult.reason);
+  }
 
   setStatus("Saved. Redirecting...", "ok");
 
