@@ -267,6 +267,17 @@ button:hover {
   z-index: 9;
 }
 
+.creator-tag {
+  margin: 0 auto 5rem;
+  width: min(900px, 100% - 2rem);
+  text-align: center;
+  color: rgba(229, 218, 245, 0.68);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
+}
+
 #musicToggle {
   width: auto;
   white-space: nowrap;
@@ -438,5 +449,10 @@ button:hover {
   .music-dock {
     right: 0.75rem;
     bottom: 0.75rem;
+  }
+
+  .creator-tag {
+    margin-bottom: 5.5rem;
+    font-size: 0.76rem;
   }
 }
